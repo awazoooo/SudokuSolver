@@ -38,6 +38,7 @@ class Cell:
         self.candidates = set()
 
 
+    @property
     def valid(self):
         """ Check cell validation """
         if not self.value:
@@ -65,7 +66,7 @@ class Cell:
         """ Remove candidates """
         before = len(set(self.candidates))
         self.candidates -= rm_candidates
-        return before == len(self.candidates)
+        return before != len(self.candidates)
 
 
     def update_cell(self, rm_candidates):
@@ -79,7 +80,8 @@ class Cell:
         """
 
         res = self._remove_candidates(rm_candidates)
-        return self._decide() and res
+        res2 = self._decide()
+        return res or res2
 
 
 
@@ -233,8 +235,8 @@ class Board:
 
 
 
-if __name__ == '__main__':
-    from solvers.z3_solver import Z3Solver
-    l = [int(i) for i in list('000009806306810000080002070030070402070604050502080010020100060000095308804700000')]
-    b = Board(l, 9)
-    solver = Z3Solver(b)
+# if __name__ == '__main__':
+#     from solvers.z3_solver import Z3Solver
+#     l = [int(i) for i in list('000009806306810000080002070030070402070604050502080010020100060000095308804700000')]
+#     b = Board(l, 9)
+#     solver = Z3Solver(b)
