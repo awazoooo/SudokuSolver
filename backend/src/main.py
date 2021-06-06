@@ -12,30 +12,66 @@ class Cell:
 
 
     def __init__(self, pos, value, size):
-        self.cell_id = pos
-        self.col, self.row, self.block = self._get_pos(pos, size)
-        self.value = value if value in range(1, size+1) else 0
-        self.candidates = set() if self.value else {i for i in range(1, size+1) if i != value}
+        self._cell_id = pos
+        self._col, self._row, self._block = self._get_pos(pos, size)
+        self._value = value if value in range(1, size+1) else 0
+        self._candidates = set() if self.value else {i for i in range(1, size+1) if i != value}
+        self._size = size
 
 
     def __repr__(self):
-        return 'Cell({:d})'.format(self.cell_id)
+        return 'Cell({:d})'.format(self._cell_id)
 
 
     @staticmethod
     def _get_pos(pos, size):
         """ Get cell col, row, and block number """
-        x = pos%size
-        y = pos//size
-        size_root = int(size**0.5)
+        x = pos % size
+        y = pos // size
+        size_root = int(size ** 0.5)
         blk = size_root * (y // size_root) + (x // size_root)
         return x, y, blk
 
 
-    def set_value(self, val):
-        """ Set cell value """
-        self.value = val
-        self.candidates = set()
+    @property
+    def cell_id(self):
+        return self._cell_id
+
+
+    @cell_id.setter
+    def cell_id(self, val):
+        self._cell_id = val
+
+
+    @property
+    def value(self):
+        return self._value
+
+
+    @value.setter
+    def value(self, val):
+        self._value = val
+        self._candidates = set()
+
+
+    @property
+    def col(self):
+        return self._col
+
+
+    @property
+    def row(self):
+        return self._row
+
+
+    @property
+    def block(self):
+        return self._block
+
+
+    @property
+    def candidates(self):
+        return self._candidates
 
 
     @property
@@ -140,16 +176,27 @@ class Board:
         +---+---+---+---+---+---+---+---+---+
         """
 
-        def make_separator():
+        def _make_separator():
             return ('-'*((len(str(self.size)) + 2))).join(['+']*(self.size+1))
 
-        sep = make_separator()
+        sep = _make_separator()
         print(sep)
         for i in range(self.size):
             # TODO: Fits if board.size > 9
             values = [' {:d} '.format(c.value) for c in self.get_row(i)]
             print('|', '|'.join(values), '|', sep='')
             print(sep)
+
+
+    def get_cell_values(self):
+        """
+        Get all values of cells
+
+        Returns:
+            Array(Int)
+        """
+
+        return [cell.value for cell in self.cells]
 
 
     def get_col(self, col):
@@ -235,8 +282,10 @@ class Board:
 
 
 
-# if __name__ == '__main__':
-#     from solvers.z3_solver import Z3Solver
-#     l = [int(i) for i in list('000009806306810000080002070030070402070604050502080010020100060000095308804700000')]
-#     b = Board(l, 9)
-#     solver = Z3Solver(b)
+if __name__ == '__main__':
+    from solvers.z3_solver import Z3Solver
+    l = [int(i) for i in list('000009806306810000080002070030070402070604050502080010020100060000095308804700000')]
+    b = Board(l, 9)
+    solver = Z3Solver(b)
+    solver.solve()
+    b.show()

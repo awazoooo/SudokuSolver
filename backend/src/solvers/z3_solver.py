@@ -54,7 +54,7 @@ class Z3Solver:
             m = self.solver.model()
             for i, var in enumerate(self.z3_vars):
                 # Update board
-                self.board[i].set_value(m[var].as_long())
+                self.board[i].value = m[var].as_long()
 
         else:
             print('Can\'t solve...')
